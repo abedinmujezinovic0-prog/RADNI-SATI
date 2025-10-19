@@ -55,6 +55,16 @@
         max-width: 400px;
         margin-top: 15px;
     }
+    #ukupno {
+        margin: 20px auto;
+        background-color: #1c1c1c;
+        padding: 15px;
+        border-radius: 8px;
+        width: 80%;
+        border: 1px solid #f1c40f;
+        color: #f1c40f;
+        font-weight: bold;
+    }
 </style>
 </head>
 <body>
@@ -64,31 +74,4 @@
 <input type="text" id="search" placeholder="🔍 Pretraži radnika po imenu..." onkeyup="pretraziRadnike()">
 
 <table id="tabela">
-    <thead>
-        <tr>
-            <th>Ime radnika</th>
-            <th>Datum</th>
-            <th>Radni sati</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr><td>Abedin Mujezinović</td><td>18.10.2025</td><td>10</td></tr>
-        <tr><td>Salim Mujezinović</td><td>18.10.2025</td><td>10</td></tr>
-        <tr><td>Abedin Mujezinović</td><td>19.10.2025</td><td>8</td></tr>
-        <tr><td>Salim Mujezinović</td><td>19.10.2025</td><td>9</td></tr>
-    </tbody>
-</table>
-
-<script>
-function pretraziRadnike() {
-    let input = document.getElementById("search").value.toLowerCase();
-    let redovi = document.querySelectorAll("#tabela tbody tr");
-    redovi.forEach(red => {
-        let ime = red.cells[0].textContent.toLowerCase();
-        red.style.display = ime.includes(input) ? "" : "none";
-    });
-}
-</script>
-
-</body>
-</html>
+    <thead
