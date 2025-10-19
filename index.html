@@ -1,90 +1,73 @@
 <!DOCTYPE html>
-<html lang="bs">
+<html lang="hr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Radni Sati</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    .container {
-      max-width: 400px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAA Group - Radni Sati (Radnik)</title>
+<style>
+body{font-family:Poppins,Arial,sans-serif;background:#f7f7f7;color:#000;text-align:center;margin:0;padding:20px;}
+header{background:#f1c40f;color:#000;padding:15px;font-size:22px;font-weight:bold;border-bottom:3px solid #000;}
+.card{background:#fff;padding:20px;margin:20px auto;border-radius:12px;box-shadow:0 0 10px rgba(0,0,0,0.2);max-width:400px;}
+input,textarea,button{width:90%;padding:10px;margin:5px 0;border-radius:6px;border:1px solid #ccc;font-size:14px;}
+button{background:#f1c40f;color:#000;font-weight:600;border:none;cursor:pointer;}
+button:hover{background:#d4a40d;}
+table{width:100%;margin-top:15px;border-collapse:collapse;}
+th,td{padding:8px;border:1px solid #ddd;}
+th{background:#f9f2cf;}
+tr:hover{background:#f2f2f2;}
+footer{margin-top:20px;color:#555;font-size:12px;}
+</style>
 </head>
 <body>
-  <h1>Radni Sati</h1>
-  <div class="container">
-    <input type="text" id="name" placeholder="Ime i prezime">
-    <input type="number" id="hours" placeholder="Broj sati danas">
-    <button onclick="saveHours()">Spremi sate</button>
-    <hr>
-    <h3>Pregled unosa:</h3>
-    <ul id="list"></ul>
-  </div>
 
-  <script>
-    function saveHours() {
-      const name = document.getElementById('name').value.trim();
-      const hours = document.getElementById('hours').value.trim();
-      if(!name || !hours) {
-        alert('Unesi ime i broj sati!');
-        return;
-      }
+<header>MAA Group - Radni Sati</header>
 
-      const record = `${name} - ${hours}h`;
-      let list = document.getElementById('list');
-      let item = document.createElement('li');
-      item.textContent = record;
-      list.appendChild(item);
+<div class="card">
+  <h3>Unesi svoj radni dan</h3>
+  <input type="date" id="datum">
+  <input type="number" id="sati" placeholder="Broj sati" step="0.25">
+  <textarea id="napomena" rows="2" placeholder="Napomena (nije obavezno)"></textarea>
+  <button onclick="spremi()">Spremi</button>
+  <button style="background:#e14b4b" onclick="obrisiSve()">Obriši sve</button>
 
-      // Spremanje lokalno u browser
-      let saved = JSON.parse(localStorage.getItem('records') || '[]');
-      saved.push(record);
-      localStorage.setItem('records', JSON.stringify(saved));
+  <h3 style="margin-top:20px;">Pregled</h3>
+  <table id="tabela">
+    <thead><tr><th>Datum</th><th>Sati</th><th>Napomena</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td><b>Ukupno</b></td><td id="ukupno">0</td><td></td></tr></tfoot>
+  </table>
+</div>
 
-      document.getElementById('name').value = '';
-      document.getElementById('hours').value = '';
-    }
+<footer>© 2025 MAA Group • Radnik</footer>
 
-    // Učitavanje postojećih podataka
-    window.onload = function() {
-      let saved = JSON.parse(localStorage.getItem('records') || '[]');
-      let list = document.getElementById('list');
-      saved.forEach(r => {
-        let item = document.createElement('li');
-        item.textContent = r;
-        list.appendChild(item);
-      });
-    }
-  </script>
+<script>
+function ucitaj(){
+  let data=JSON.parse(localStorage.getItem("radnisati_radnik")||"[]");
+  let tb=document.querySelector("#tabela tbody"); tb.innerHTML=""; let sum=0;
+  data.forEach(r=>{
+    sum+=parseFloat(r.sati)||0;
+    tb.innerHTML+=`<tr><td>${r.datum}</td><td>${r.sati}</td><td>${r.napomena||""}</td></tr>`;
+  });
+  document.getElementById("ukupno").textContent=sum.toFixed(2);
+}
+function spremi(){
+  let d=document.getElementById("datum").value;
+  let s=parseFloat(document.getElementById("sati").value);
+  let n=document.getElementById("napomena").value;
+  if(!d||!s){alert("Unesi datum i sate!");return;}
+  let data=JSON.parse(localStorage.getItem("radnisati_radnik")||"[]");
+  data.push({datum:d,sati:s,napomena:n});
+  localStorage.setItem("radnisati_radnik",JSON.stringify(data));
+  document.getElementById("sati").value="";
+  document.getElementById("napomena").value="";
+  ucitaj();
+}
+function obrisiSve(){
+  if(confirm("Sigurno želiš obrisati sve unose?")){
+    localStorage.removeItem("radnisati_radnik"); ucitaj();
+  }
+}
+window.onload=ucitaj;
+</script>
 </body>
 </html>
