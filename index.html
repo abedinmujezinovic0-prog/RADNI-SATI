@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radni Sati</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Radni Sati</h1>
+  <div class="container">
+    <input type="text" id="name" placeholder="Ime i prezime">
+    <input type="number" id="hours" placeholder="Broj sati danas">
+    <button onclick="saveHours()">Spremi sate</button>
+    <hr>
+    <h3>Pregled unosa:</h3>
+    <ul id="list"></ul>
+  </div>
+
+  <script>
+    function saveHours() {
+      const name = document.getElementById('name').value.trim();
+      const hours = document.getElementById('hours').value.trim();
+      if(!name || !hours) {
+        alert('Unesi ime i broj sati!');
+        return;
+      }
+
+      const record = `${name} - ${hours}h`;
+      let list = document.getElementById('list');
+      let item = document.createElement('li');
+      item.textContent = record;
+      list.appendChild(item);
+
+      // Spremanje lokalno u browser
+      let saved = JSON.parse(localStorage.getItem('records') || '[]');
+      saved.push(record);
+      localStorage.setItem('records', JSON.stringify(saved));
+
+      document.getElementById('name').value = '';
+      document.getElementById('hours').value = '';
+    }
+
+    // Učitavanje postojećih podataka
+    window.onload = function() {
+      let saved = JSON.parse(localStorage.getItem('records') || '[]');
+      let list = document.getElementById('list');
+      saved.forEach(r => {
+        let item = document.createElement('li');
+        item.textContent = r;
+        list.appendChild(item);
+      });
+    }
+  </script>
+</body>
+</html>
