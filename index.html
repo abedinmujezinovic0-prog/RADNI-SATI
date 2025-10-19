@@ -24,17 +24,20 @@ footer{margin-top:20px;color:#555;font-size:12px;}
 
 <div class="card">
   <h3>Unesi svoj radni dan</h3>
+
   <input type="date" id="datum">
+  <input type="text" id="baustela" placeholder="Naziv bauštele (npr. The Q)">
   <input type="number" id="sati" placeholder="Broj sati" step="0.25">
   <textarea id="napomena" rows="2" placeholder="Napomena (nije obavezno)"></textarea>
+
   <button onclick="spremi()">Spremi</button>
   <button style="background:#e14b4b" onclick="obrisiSve()">Obriši sve</button>
 
   <h3 style="margin-top:20px;">Pregled</h3>
   <table id="tabela">
-    <thead><tr><th>Datum</th><th>Sati</th><th>Napomena</th></tr></thead>
+    <thead><tr><th>Datum</th><th>Bauštela</th><th>Sati</th><th>Napomena</th></tr></thead>
     <tbody></tbody>
-    <tfoot><tr><td><b>Ukupno</b></td><td id="ukupno">0</td><td></td></tr></tfoot>
+    <tfoot><tr><td colspan="2"><b>Ukupno</b></td><td id="ukupno">0</td><td></td></tr></tfoot>
   </table>
 </div>
 
@@ -46,22 +49,26 @@ function ucitaj(){
   let tb=document.querySelector("#tabela tbody"); tb.innerHTML=""; let sum=0;
   data.forEach(r=>{
     sum+=parseFloat(r.sati)||0;
-    tb.innerHTML+=`<tr><td>${r.datum}</td><td>${r.sati}</td><td>${r.napomena||""}</td></tr>`;
+    tb.innerHTML+=`<tr><td>${r.datum}</td><td>${r.baustela}</td><td>${r.sati}</td><td>${r.napomena||""}</td></tr>`;
   });
   document.getElementById("ukupno").textContent=sum.toFixed(2);
 }
+
 function spremi(){
   let d=document.getElementById("datum").value;
+  let b=document.getElementById("baustela").value.trim();
   let s=parseFloat(document.getElementById("sati").value);
   let n=document.getElementById("napomena").value;
-  if(!d||!s){alert("Unesi datum i sate!");return;}
+  if(!d||!b||!s){alert("Unesi datum, bauštelu i sate!");return;}
   let data=JSON.parse(localStorage.getItem("radnisati_radnik")||"[]");
-  data.push({datum:d,sati:s,napomena:n});
+  data.push({datum:d,baustela:b,sati:s,napomena:n});
   localStorage.setItem("radnisati_radnik",JSON.stringify(data));
   document.getElementById("sati").value="";
   document.getElementById("napomena").value="";
+  document.getElementById("baustela").value="";
   ucitaj();
 }
+
 function obrisiSve(){
   if(confirm("Sigurno želiš obrisati sve unose?")){
     localStorage.removeItem("radnisati_radnik"); ucitaj();
