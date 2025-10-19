@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Radni Sati</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    .login, .content {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="login" id="loginDiv">
+    <h2>Prijava šefa</h2>
+    <input type="password" id="password" placeholder="Unesite lozinku">
+    <button onclick="login()">Prijavi se</button>
+  </div>
+
+  <div class="content" id="contentDiv" style="display:none;">
+    <h2>Pregled radnika</h2>
+    <table id="table">
+      <tr><th>Ime i prezime</th><th>Sati</th></tr>
+    </table>
+    <h3 id="ukupno"></h3>
+  </div>
+
+  <script>
+    const lozinka = "abedin123"; // 🔒 lozinka za šefa
+
+    function login() {
+      const pass = document.getElementById("password").value;
+      if (pass === lozinka) {
+        document.getElementById("loginDiv").style.display = "none";
+        document.getElementById("contentDiv").style.display = "block";
+        ucitajPodatke();
+      } else {
+        alert("Pogrešna lozinka!");
+      }
+    }
+
+    function ucitajPodatke() {
+      let saved = JSON.parse(localStorage.getItem("records") || "[]");
+      let tabela = document.getElementById("table");
+      let ukupno = 0;
+      saved.forEach(r => {
+        const [ime, sati] = r.split(" - ");
+        let row = tabela.insertRow();
+        row.insertCell(0).textContent = ime;
+        row.insertCell(1).textContent = sati;
+        ukupno += parseFloat(sati);
+      });
+      document.getElementById("ukupno").textContent = "Ukupno sati: " + ukupno + "h";
+    }
+  </script>
+</body>
+</html>
