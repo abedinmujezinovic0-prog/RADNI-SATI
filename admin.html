@@ -3,77 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Radni Sati</title>
+  <title>MAA Group - Admin Radni Sati</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
+    :root {
+      --primary: #0d6efd;
+      --secondary: #6c757d;
+      --background: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-color: #222;
+      --accent: #17a2b8;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: var(--background);
+      color: var(--text-color);
       margin: 0;
-      padding: 20px;
     }
-    .login, .content {
-      max-width: 500px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 15px 0;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
+
+    .container {
+      max-width: 650px;
+      margin: 30px auto;
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
     input, button {
       width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 5px;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
       border: 1px solid #ccc;
+      font-size: 15px;
     }
+
     button {
-      background-color: #007bff;
+      background-color: var(--primary);
       color: white;
       border: none;
+      font-weight: bold;
       cursor: pointer;
+      transition: all 0.2s ease;
     }
+
     button:hover {
       background-color: #0056b3;
+      transform: scale(1.03);
     }
+
+    .excel-btn {
+      background-color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .excel-btn:hover {
+      background-color: #138496;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 15px;
+      margin-top: 20px;
     }
+
     th, td {
       border: 1px solid #ddd;
-      padding: 8px;
+      padding: 10px;
       text-align: center;
     }
+
     th {
-      background-color: #007bff;
+      background-color: var(--primary);
       color: white;
     }
+
     .actions button {
       width: auto;
-      padding: 5px 8px;
-      margin: 2px;
+      padding: 6px 10px;
+      margin: 3px;
       font-size: 12px;
+      border-radius: 5px;
     }
+
+    .edit-btn {
+      background-color: #28a745;
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--secondary);
+      font-size: 13px;
+      margin-top: 30px;
+    }
+
   </style>
 </head>
 <body>
-  <div class="login" id="loginDiv">
-    <h2>Prijava šefa</h2>
+  <header>🏗️ MAA GROUP – Radni Sati (Admin)</header>
+
+  <div class="container" id="loginDiv">
+    <h2>🔒 Prijava šefa</h2>
     <input type="password" id="password" placeholder="Unesite lozinku">
     <button onclick="login()">Prijavi se</button>
   </div>
 
-  <div class="content" id="contentDiv" style="display:none;">
-    <h2>Pregled radnika</h2>
+  <div class="container" id="contentDiv" style="display:none;">
+    <h2>📋 Pregled radnika</h2>
+    <button class="excel-btn" onclick="izveziExcel()">📊 Izvezi u Excel</button>
     <table id="table">
       <tr><th>Ime i prezime</th><th>Sati</th><th>Akcije</th></tr>
     </table>
     <h3 id="ukupno"></h3>
   </div>
 
+  <p class="footer">© 2025 MAA Group | Sistem za praćenje radnih sati</p>
+
   <script>
-    const lozinka = "abedin123"; // 🔒 lozinka za šefa
+    const lozinka = "abedin123";
 
     function login() {
       const pass = document.getElementById("password").value;
@@ -103,10 +167,12 @@
 
         let btnEdit = document.createElement("button");
         btnEdit.textContent = "Uredi";
+        btnEdit.classList.add("edit-btn");
         btnEdit.onclick = () => urediUnos(index);
 
         let btnDelete = document.createElement("button");
         btnDelete.textContent = "Obriši";
+        btnDelete.classList.add("delete-btn");
         btnDelete.onclick = () => obrisiUnos(index);
 
         akcije.appendChild(btnEdit);
@@ -136,6 +202,27 @@
         localStorage.setItem("records", JSON.stringify(saved));
         ucitajPodatke();
       }
+    }
+
+    function izveziExcel() {
+      let saved = JSON.parse(localStorage.getItem("records") || "[]");
+      if (saved.length === 0) {
+        alert("Nema podataka za izvoz!");
+        return;
+      }
+
+      let data = saved.map(r => {
+        const [ime, sati] = r.split(" - ");
+        return { "Ime i prezime": ime, "Sati": sati };
+      });
+
+      const ukupno = data.reduce((sum, r) => sum + parseFloat(r.Sati), 0);
+      data.push({ "Ime i prezime": "UKUPNO", "Sati": ukupno });
+
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Radni Sati");
+      XLSX.writeFile(wb, "MAA_Group_Radni_Sati.xlsx");
     }
   </script>
 </body>
