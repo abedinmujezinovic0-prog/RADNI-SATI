@@ -4,168 +4,100 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MAA Group - Radni Sati</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-    body {
-        font-family: 'Poppins', sans-serif;
-        background-color: #f7f7f7;
-        color: #222;
-        margin: 0;
-        padding: 0;
-        text-align: center;
-    }
-    header {
-        background-color: #f1c40f;
-        color: #000;
-        padding: 20px;
-        font-size: 26px;
-        font-weight: bold;
-        letter-spacing: 1px;
-        border-bottom: 3px solid #000;
-    }
-    input, button {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        background-color: #fff;
-        color: #222;
-        margin: 5px;
-    }
-    button {
-        font-weight: 600;
-        background-color: #f1c40f;
-        border: none;
-    }
-    button:hover {
-        background-color: #d4a40d;
-        cursor: pointer;
-    }
-    table {
-        margin: 20px auto;
-        width: 90%;
-        border-collapse: collapse;
-        background-color: #fff;
-        box-shadow: 0 0 8px rgba(0,0,0,.1);
-    }
-    th, td {
-        padding: 10px;
-        border: 1px solid #ddd;
-    }
-    th {
-        background-color: #f9f2cf;
-    }
-    tr:hover {
-        background-color: #f2f2f2;
-    }
-    #search {
-        width: 80%;
-        max-width: 400px;
-        margin-top: 15px;
-    }
-    #ukupno {
-        margin: 20px auto;
-        background-color: #fff;
-        padding: 15px;
-        border-radius: 8px;
-        width: 80%;
-        border: 1px solid #ccc;
-        font-weight: bold;
-        color: #000;
-    }
+body {font-family: 'Poppins', sans-serif; background-color: #f7f7f7; color: #222; margin: 0; text-align: center;}
+header {background-color: #f1c40f; color: #000; padding: 20px; font-size: 26px; font-weight: bold; border-bottom: 3px solid #000;}
+#loginCard {background:#fff; border-radius:12px; padding:25px; margin:100px auto; width:90%; max-width:400px; box-shadow:0 0 10px rgba(0,0,0,0.2);}
+input[type=password], button {padding:10px; width:80%; margin:8px auto; border-radius:6px; border:1px solid #ccc;}
+button {background:#f1c40f; color:#000; font-weight:600; cursor:pointer;}
+button:hover {background:#d4a40d;}
+#content {display:none;}
+table {margin:20px auto; width:90%; border-collapse:collapse; background:#fff; box-shadow:0 0 8px rgba(0,0,0,.1);}
+th,td {padding:10px; border:1px solid #ddd;} th {background:#f9f2cf;} tr:hover {background:#f2f2f2;}
+#search {width:80%; max-width:400px; margin-top:15px;}
+#ukupno {margin:20px auto; background:#fff; padding:15px; border-radius:8px; width:80%; border:1px solid #ccc; font-weight:bold; color:#000;}
 </style>
 </head>
 <body>
 
 <header>MAA Group - Radni Sati</header>
 
-<input type="text" id="search" placeholder="🔍 Pretraži radnika po imenu..." onkeyup="pretraziRadnike()">
-<button onclick="ispisPDF()">📄 Ispis u PDF</button>
+<div id="loginCard">
+  <h2>🔒 Zaštićeni pristup</h2>
+  <input type="password" id="pass" placeholder="Unesi šifru...">
+  <button onclick="provjeri()">Prijavi se</button>
+  <p id="msg" style="color:red;"></p>
+</div>
 
-<table id="tabela">
-    <thead>
-        <tr>
-            <th>Ime radnika</th>
-            <th>Datum</th>
-            <th>Radni sati</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr><td>Abedin Mujezinović</td><td>13.10.2025</td><td>10</td></tr>
-        <tr><td>Abedin Mujezinović</td><td>14.10.2025</td><td>10</td></tr>
-        <tr><td>Abedin Mujezinović</td><td>15.10.2025</td><td>10</td></tr>
-        <tr><td>Abedin Mujezinović</td><td>16.10.2025</td><td>10</td></tr>
-        <tr><td>Abedin Mujezinović</td><td>17.10.2025</td><td>10</td></tr>
-        <tr><td>Abedin Mujezinović</td><td>18.10.2025</td><td>8</td></tr>
-        <tr><td>Salim Mujezinović</td><td>13.10.2025</td><td>10</td></tr>
-        <tr><td>Salim Mujezinović</td><td>14.10.2025</td><td>10</td></tr>
-        <tr><td>Salim Mujezinović</td><td>15.10.2025</td><td>10</td></tr>
-        <tr><td>Salim Mujezinović</td><td>16.10.2025</td><td>10</td></tr>
-        <tr><td>Salim Mujezinović</td><td>17.10.2025</td><td>10</td></tr>
-        <tr><td>Salim Mujezinović</td><td>18.10.2025</td><td>8</td></tr>
-    </tbody>
-</table>
+<div id="content">
+  <input type="text" id="search" placeholder="🔍 Pretraži radnika..." onkeyup="pretraziRadnike()">
+  <button onclick="ispisPDF()">📄 Ispis u PDF</button>
 
-<div id="ukupno"></div>
+  <table id="tabela">
+      <thead><tr><th>Ime radnika</th><th>Datum</th><th>Radni sati</th></tr></thead>
+      <tbody>
+          <tr><td>Abedin Mujezinović</td><td>13.10.2025</td><td>10</td></tr>
+          <tr><td>Abedin Mujezinović</td><td>14.10.2025</td><td>10</td></tr>
+          <tr><td>Abedin Mujezinović</td><td>15.10.2025</td><td>10</td></tr>
+          <tr><td>Abedin Mujezinović</td><td>16.10.2025</td><td>10</td></tr>
+          <tr><td>Salim Mujezinović</td><td>17.10.2025</td><td>8</td></tr>
+          <tr><td>Ramo Bošnjak</td><td>18.10.2025</td><td>9</td></tr>
+      </tbody>
+  </table>
 
+  <div id="ukupno"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-function pretraziRadnike() {
-    let input = document.getElementById("search").value.toLowerCase();
-    let redovi = document.querySelectorAll("#tabela tbody tr");
-    let suma = {};
-    let prikazani = 0;
-    redovi.forEach(red => {
-        let ime = red.cells[0].textContent.toLowerCase();
-        let sati = parseFloat(red.cells[2].textContent);
-        if (ime.includes(input) || input === "") {
-            red.style.display = "";
-            suma[ime] = (suma[ime] || 0) + sati;
-            prikazani++;
-        } else {
-            red.style.display = "none";
-        }
-    });
-    prikaziUkupno(suma, prikazani);
+function provjeri(){
+  const sifra=document.getElementById("pass").value;
+  const msg=document.getElementById("msg");
+  if(sifra==="abedin123"){
+    document.getElementById("loginCard").style.display="none";
+    document.getElementById("content").style.display="block";
+  } else {
+    msg.textContent="❌ Pogrešna šifra!";
+  }
 }
 
-function prikaziUkupno(suma, prikazani) {
-    let div = document.getElementById("ukupno");
-    if (prikazani === 0) {
-        div.innerHTML = "";
-        return;
-    }
-    let tekst = "<h3>Ukupno sati po radniku:</h3><ul style='list-style:none;padding:0'>";
-    for (let ime in suma) {
-        let prikazIme = ime.charAt(0).toUpperCase() + ime.slice(1);
-        tekst += `<li>${prikazIme}: ${suma[ime]} sati</li>`;
-    }
-    tekst += "</ul>";
-    div.innerHTML = tekst;
+function pretraziRadnike(){
+  let input=document.getElementById("search").value.toLowerCase();
+  let redovi=document.querySelectorAll("#tabela tbody tr");
+  let suma={}; let prikazani=0;
+  redovi.forEach(red=>{
+    let ime=red.cells[0].textContent.toLowerCase();
+    let sati=parseFloat(red.cells[2].textContent);
+    if(ime.includes(input)||input===""){red.style.display=""; suma[ime]=(suma[ime]||0)+sati; prikazani++;}
+    else{red.style.display="none";}
+  });
+  prikaziUkupno(suma,prikazani);
 }
 
-function ispisPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.text("MAA Group - Izvještaj radnih sati", 20, 20);
-    const tabela = document.getElementById("tabela");
-    let rows = [];
-    for (let i = 1; i < tabela.rows.length; i++) {
-        const r = tabela.rows[i];
-        if (r.style.display !== "none")
-            rows.push([r.cells[0].innerText, r.cells[1].innerText, r.cells[2].innerText]);
-    }
-    let y = 30;
-    doc.setFontSize(10);
-    rows.forEach(r => {
-        doc.text(`${r[0]} | ${r[1]} | ${r[2]} sati`, 20, y);
-        y += 8;
-    });
-    y += 10;
-    doc.text(document.getElementById("ukupno").innerText, 20, y);
-    doc.save("MAA_Group_Radni_Sati.pdf");
+function prikaziUkupno(suma,prikazani){
+  let div=document.getElementById("ukupno");
+  if(prikazani===0){div.innerHTML="";return;}
+  let tekst="<h3>Ukupno sati po radniku:</h3><ul style='list-style:none;padding:0'>";
+  for(let ime in suma){let prikazIme=ime.charAt(0).toUpperCase()+ime.slice(1);
+    tekst+=`<li>${prikazIme}: ${suma[ime]} sati</li>`;}
+  tekst+="</ul>"; div.innerHTML=tekst;
 }
 
-window.onload = pretraziRadnike;
+function ispisPDF(){
+  const { jsPDF }=window.jspdf; const doc=new jsPDF();
+  doc.text("MAA Group - Izvještaj radnih sati",20,20);
+  const tabela=document.getElementById("tabela"); let rows=[];
+  for(let i=1;i<tabela.rows.length;i++){
+    const r=tabela.rows[i];
+    if(r.style.display!=="none")
+      rows.push([r.cells[0].innerText,r.cells[1].innerText,r.cells[2].innerText]);
+  }
+  let y=30; doc.setFontSize(10);
+  rows.forEach(r=>{doc.text(`${r[0]} | ${r[1]} | ${r[2]} sati`,20,y); y+=8;});
+  y+=10; doc.text(document.getElementById("ukupno").innerText,20,y);
+  doc.save("MAA_Group_Radni_Sati.pdf");
+}
+window.onload=pretraziRadnike;
 </script>
-
 </body>
 </html>
